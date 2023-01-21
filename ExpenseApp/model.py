@@ -38,3 +38,13 @@ class UserRead(UserBase):
 class Login(SQLModel):
     username: str
     password: str
+
+
+# to generate the token for our end point
+class Token(SQLModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(SQLModel):
+    username: str | None = None
