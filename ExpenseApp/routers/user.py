@@ -1,6 +1,7 @@
 from ..model import UserCreate, UserRead, User
 from sqlmodel import Session, SQLModel, select
 from ..database import engine
+from ..hashing import get_hashed_password
 from fastapi import FastAPI, APIRouter, Depends, Security, HTTPException
 from fastapi.security import HTTPBearer
 import uuid as uuid_pkg
@@ -27,7 +28,9 @@ def create_user(*, session: Session = Depends(get_session), user: UserCreate):
     # hashedPassword = pwd_cxt.hash(user.password)
     # User is called from the ORM
     new_user = User(
-        username=user.username, email=user.email, password=pwd_cxt.hash(user.password)
+        username=user.username,
+        email=user.email,
+        password=get_hashed_password(user.password),
     )
     session.add(new_user)
     session.commit()

@@ -9,7 +9,6 @@ import uuid as uuid_pkg
 class UserBase(SQLModel):
     username: str = Field(index=True, description="to give a name")
     email: str = Field(index=True, description="to give an email")
-    password: str
 
 
 # Inheriting the base model for user and adding id class
@@ -21,13 +20,21 @@ class User(UserBase, table=True):
         index=True,
         nullable=False,
     )
+    password: str
 
 
 # To create a user in a database
 class UserCreate(UserBase):
+    password: str
     pass
 
 
 # To read a user from a database
 class UserRead(UserBase):
     id: uuid_pkg.UUID
+
+
+# To login in the system
+class Login(SQLModel):
+    username: str
+    password: str

@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, APIRouter, Depends, Security
 from sqlmodel import Session, SQLModel, select
 from fastapi.security import HTTPBearer
 from .database import create_db_and_tables
-from .routers import user
+from .routers import user, auth
 
 app = FastAPI()
 
@@ -14,4 +14,6 @@ def on_startup():
     create_db_and_tables()
 
 
+# Routers provided in the application
 app.include_router(user.router)
+app.include_router(auth.router)
