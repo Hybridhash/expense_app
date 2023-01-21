@@ -2,6 +2,8 @@ from ..model import UserCreate, UserRead, User
 from sqlmodel import Session, SQLModel, select
 from ..database import engine
 from ..hashing import get_hashed_password
+from ..jwt_token import get_current_user
+from ..auth_bearer import JWTBearer
 from fastapi import FastAPI, APIRouter, Depends, Security, HTTPException
 from fastapi.security import HTTPBearer
 import uuid as uuid_pkg
@@ -40,7 +42,11 @@ def create_user(*, session: Session = Depends(get_session), user: UserCreate):
 
 # To get the user from the database based on email id
 @router.get("/user/{user_id}", response_model=UserRead)
-def read_user(*, session: Session = Depends(get_session), user_id: uuid_pkg.UUID):
+def read_user(
+    *,
+    session: Session = Depends(get_session),
+    user_id: uuid_pkg.UUID,
+):
     # with Session(engine) as session:
     hero = session.get(User, user_id)
     if not hero:
@@ -49,7 +55,9 @@ def read_user(*, session: Session = Depends(get_session), user_id: uuid_pkg.UUID
 
 
 # To get the id for all users from database
-@router.get("/users/", response_model=List[UserRead])
+@router.get(
+    "/users/", response_model=List[UserRead], dependencies=[Depends(JWTBearer())]
+)
 def read_heroes(
     *,
     session: Session = Depends(get_session),

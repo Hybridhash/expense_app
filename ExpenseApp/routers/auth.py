@@ -1,6 +1,7 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException
 from ..model import UserCreate, UserRead, User, Login
 from sqlmodel import Session, SQLModel, select
+from fastapi.security import OAuth2PasswordRequestForm
 from ..database import engine
 from ..hashing import verify_password
 
@@ -21,7 +22,11 @@ def get_session():
 
 
 @router.post("/login", status_code=201)
-async def login(*, session: Session = Depends(get_session), login: Login):
+async def login(
+    *,
+    session: Session = Depends(get_session),
+    login: Login,
+):
     user = session.query(User).filter(User.username == login.username).first()
     if user is None:
         raise HTTPException(status_code=404, detail="Invalid username and password")
