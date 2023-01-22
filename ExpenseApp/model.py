@@ -1,13 +1,14 @@
-from typing import Optional
+from typing import Optional, List
 
 # One line of FastAPI imports here later 👈
-from sqlmodel import Field, Session, SQLModel, create_engine, select
+from sqlmodel import Field, Session, SQLModel, create_engine, select, Relationship
+from pydantic import EmailStr, validator
 
 import uuid as uuid_pkg
 
 
 class UserBase(SQLModel):
-    username: str = Field(index=True, description="to give a name")
+    username: str = Field(index=True, description="to give a name", unique=True)
     email: str = Field(index=True, description="to give an email")
 
 
@@ -21,6 +22,7 @@ class User(UserBase, table=True):
         nullable=False,
     )
     password: str
+    # expenses: List["Expense"] = Relationship(back_populates="user")
 
 
 # To create a user in a database
@@ -48,3 +50,32 @@ class Token(SQLModel):
 
 class TokenData(SQLModel):
     username: str | None = None
+
+
+# to create a expense in database
+
+
+class ExpenseBase(SQLModel):
+    title: str = Field(index=True, description="to give a expense title")
+    # description: Optional[str] = Field (default=None , index= True)
+    amount: float
+    # category: Optional[str] = Field(default=None, index=True)
+    category: str
+
+
+class Expense(ExpenseBase, table=True):
+    id: uuid_pkg.UUID = Field(
+        default_factory=uuid_pkg.uuid4,
+        primary_key=True,
+        index=True,
+        nullable=False,
+    )
+    # creator: Optional[User] = Relationship(back_populates="expenses")
+
+
+class ExpenseCreate(ExpenseBase):
+    pass
+
+
+class ExpenseRead(ExpenseBase):
+    id: uuid_pkg.UUID

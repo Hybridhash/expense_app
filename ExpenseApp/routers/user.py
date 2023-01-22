@@ -8,6 +8,7 @@ from fastapi import FastAPI, APIRouter, Depends, Security, HTTPException
 from fastapi.security import HTTPBearer
 import uuid as uuid_pkg
 from typing import List
+from pydantic import validator
 
 
 # Routers for user API
@@ -28,6 +29,17 @@ def create_user(*, session: Session = Depends(get_session), user: UserCreate):
     # with Session(engine) as session:
     # Hashing a password
     # hashedPassword = pwd_cxt.hash(user.password)
+    # Validator to check that email and username already exist in database
+    existing_email = session.query(User).filter(User.email == user.email).first()
+    existing_username = (
+        session.query(User).filter(User.username == user.username).first()
+    )
+
+    if existing_email:
+        raise HTTPException(status_code=400, detail="Email already exists")
+    elif existing_username:
+        raise HTTPException(status_code=400, detail="Username not available")
+
     # User is called from the ORM
     new_user = User(
         username=user.username,
