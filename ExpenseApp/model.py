@@ -3,6 +3,9 @@ from typing import Optional, List
 # One line of FastAPI imports here later 👈
 from sqlmodel import Field, Session, SQLModel, create_engine, select, Relationship
 from pydantic import EmailStr, validator
+from datetime import datetime
+from sqlmodel import Field, SQLModel
+from sqlalchemy import DateTime
 
 import uuid as uuid_pkg
 
@@ -56,11 +59,12 @@ class TokenData(SQLModel):
 
 
 class ExpenseBase(SQLModel):
-    title: str = Field(index=True, description="to give a expense title")
+    # title: str = Field(index=True, description="to give a expense title")
     # description: Optional[str] = Field (default=None , index= True)
-    amount: float
+    amount: int = Field(nullable=False)
     # category: Optional[str] = Field(default=None, index=True)
-    category: str
+    description: Optional[str] = Field(default=None, index=True)
+    date: datetime = Field(default_factory=datetime.utcnow, nullable=False)
 
 
 class Expense(ExpenseBase, table=True):
@@ -70,6 +74,7 @@ class Expense(ExpenseBase, table=True):
         index=True,
         nullable=False,
     )
+    creator_id: Optional[uuid_pkg.UUID] = Field(default=None, foreign_key="user.id")
     # creator: Optional[User] = Relationship(back_populates="expenses")
 
 

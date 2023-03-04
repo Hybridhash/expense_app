@@ -45,6 +45,16 @@ class JWTBearer(HTTPBearer):
             isTokenValid = True
         return isTokenValid
 
+    def get_username(self, jwtoken: str) -> str:
+        try:
+            payload = decodeJWT(jwtoken)
+            print(payload, " try: Payload called in get_username")
+            return payload["sub"]
+        except:
+            raise HTTPException(
+                status_code=403, detail="Invalid token or expired token."
+            )
+
     # to get the id username of active user
     # def get_current_active_user(self, jwtoken: str):
     #     try:
@@ -54,3 +64,7 @@ class JWTBearer(HTTPBearer):
     #         raise HTTPException(status_code=400, detail="User in active.")
     #     if payload:
     #         return payload["sub"]
+
+
+# https://testdriven.io/blog/fastapi-jwt-auth/#securing-routes
+# https://www.freecodecamp.org/news/how-to-add-jwt-authentication-in-fastapi/

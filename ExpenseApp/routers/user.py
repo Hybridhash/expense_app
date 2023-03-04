@@ -2,7 +2,8 @@ from ..model import UserCreate, UserRead, User
 from sqlmodel import Session, SQLModel, select
 from ..database import engine
 from ..hashing import get_hashed_password
-from ..jwt_token import get_current_user
+
+# from ..jwt_token import get_current_user
 from ..auth_bearer import JWTBearer
 from fastapi import FastAPI, APIRouter, Depends, Security, HTTPException
 from fastapi.security import HTTPBearer
@@ -35,10 +36,10 @@ def create_user(*, session: Session = Depends(get_session), user: UserCreate):
         session.query(User).filter(User.username == user.username).first()
     )
 
-    if existing_email:
-        raise HTTPException(status_code=400, detail="Email already exists")
-    elif existing_username:
-        raise HTTPException(status_code=400, detail="Username not available")
+    if existing_username:
+        raise HTTPException(status_code=403, detail="Username not available")
+    elif existing_email:
+        raise HTTPException(status_code=403, detail="Email already exists")
 
     # User is called from the ORM
     new_user = User(
