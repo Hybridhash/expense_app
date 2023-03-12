@@ -59,10 +59,7 @@ class TokenData(SQLModel):
 
 
 class ExpenseBase(SQLModel):
-    # title: str = Field(index=True, description="to give a expense title")
-    # description: Optional[str] = Field (default=None , index= True)
     amount: int = Field(nullable=False)
-    # category: Optional[str] = Field(default=None, index=True)
     description: Optional[str] = Field(default=None, index=True)
     date: datetime = Field(default_factory=datetime.utcnow, nullable=False)
 
@@ -75,7 +72,6 @@ class Expense(ExpenseBase, table=True):
         nullable=False,
     )
     creator_id: Optional[uuid_pkg.UUID] = Field(default=None, foreign_key="user.id")
-    # creator: Optional[User] = Relationship(back_populates="expenses")
 
 
 class ExpenseCreate(ExpenseBase):
